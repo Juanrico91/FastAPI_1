@@ -1,9 +1,9 @@
 #Python
-from re import T
 from typing import Optional
+from enum import Enum # Enumeraciones de strings
 
 #Pydantic
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 #FastAPI
 from fastapi import FastAPI
@@ -13,17 +13,36 @@ app = FastAPI()
 
 # Models
 
+class HairColor(Enum):
+    white = 'white'
+    brown = 'brown'
+    black = 'black'
+    blonde = 'blonde'
+    red = 'red'
+
 class Location(BaseModel):
     city: str
     state: str
     country: str
 
 class Person(BaseModel): 
-    first_name: str
-    last_name: str
-    age: int 
-    hair_color: Optional[str] = None
-    is_married: Optional[bool] = None
+    first_name: str = Field( #validar Class parameters
+        ...,
+        min_length = 1,
+        max_length = 50,
+        )
+    last_name: str = Field(
+        ...,
+        min_length = 1,
+        max_length = 50,
+        )
+    age: int = Field(
+        ...,
+        gt = 0,
+        le = 115
+    )
+    hair_color: Optional[HairColor] = Field(default = None) #obligo a hair_color a ser heredado de la clase HairColor para tener los colores de validaciones
+    is_married: Optional[bool] = Field(default = None)
 
 @app.get("/")
 def home(): 
@@ -48,7 +67,7 @@ def show_person(
         description = "This is the person name. It is between 1 and 50 characters long"
         ),
     age : str = Query(
-        ...,
+        ..., #significa que es requerido
         title="Person Age",
         description="This is the person age. It is required"
         )
