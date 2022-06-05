@@ -1,8 +1,3 @@
----
-title: 'FastAPI Query & Path Parameters, validations too! '
-disqus: hackmd
----
-
 FastAPI Query & Path Parameters, validations too!
 ===
 
