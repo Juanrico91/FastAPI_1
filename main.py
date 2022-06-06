@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 #FastAPI
 from fastapi import FastAPI
 from fastapi import Body, Query, Path
+from fastapi import status
 
 app = FastAPI()
 
@@ -70,19 +71,29 @@ class Person(PersonBase):
 class PersonOut(PersonBase):
     pass
 
-@app.get("/")
+@app.get(
+    path= "/",
+    status_code=status.HTTP_200_OK
+    )
 def home():
     return {"Hello": "World"}
 
 # Request and Response Body
 
-@app.post("/person/new", response_model=PersonOut) # con response model devuelvo lo que esta en PersonOut
+@app.post(
+    path= "/person/new",
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED
+    ) # con response model devuelvo lo que esta en PersonOut
 def create_person(person: Person = Body(...)):
     return person
 
 # Validaciones: Query Parameters
 
-@app.get("/person/detail")
+@app.get(
+    path = "/person/detail",
+    status_code=status.HTTP_200_OK
+    )
 def show_person(
     #default is none for query parameters min lenght 1 max lenght 50
     name : Optional[str] = Query(
@@ -104,7 +115,10 @@ def show_person(
 
 #Validaciones: Path Parameters
 
-@app.get("/person/detail/{person_id}")
+@app.get(
+    path = "/person/detail/{person_id}",
+    status_code =status.HTTP_200_OK
+    )
 def show_person(
     person_id : int = Path(
             ...,
@@ -118,7 +132,10 @@ def show_person(
 
 # Validaciones:Request Body
 
-@app.put("/person/{person_id}")
+@app.put(
+    path="/person/{person_id}",
+    status_code=status.HTTP_202_ACCEPTED
+    )
 def update_person(
     person_id: int = Path(
         ...,
@@ -127,9 +144,10 @@ def update_person(
         gt = 0,
         example = 123
     ),
-    person: Person = Body(...), #las validaciones de request bodies se hacen setenando los parametros del modelo de pydantic
-    location: Location = Body(...),
+    person: PersonOut = Body(...), #las validaciones de request bodies se hacen setenando los parametros del modelo de pydantic
+    #location: Location = Body(...),
 ):
-    results = person.dict()
-    results.update(location.dict())
-    return results
+    #results = person.dict()
+    #results.update(location.dict())
+    #return results
+    return person
