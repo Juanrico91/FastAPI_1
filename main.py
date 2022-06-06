@@ -19,7 +19,6 @@ class HairColor(Enum):
     black = 'black'
     blonde = 'blonde'
     red = 'red'
-
 class Location(BaseModel):
     city: str = Field(
         min_length=1,
@@ -36,9 +35,7 @@ class Location(BaseModel):
         max_length= 10,
         example="Colombia"
         ) #los examples no funcionan con la clase de config
-
-class Person(BaseModel):
-
+class PersonBase(BaseModel):
     first_name: str = Field( #validar Class parameters
         ...,
         min_length = 1,
@@ -57,7 +54,6 @@ class Person(BaseModel):
 
     hair_color: Optional[HairColor] = Field(default = None) #obligo a hair_color a ser heredado de la clase HairColor para tener los colores de validaciones
     is_married: Optional[bool] = Field(default = None)
-    password: str = Field(..., min_length = 8)
     class Config:
         schema_extra = {
             "example": {
@@ -69,27 +65,10 @@ class Person(BaseModel):
                 "password" : "1234ag678"
             }
         }
-
-class PersonOut(BaseModel):
-
-    first_name: str = Field( #validar Class parameters
-        ...,
-        min_length = 1,
-        max_length = 50,
-        ) #puedo poner ejemplos dentro del Field pero con la clase de config queda bien
-    last_name: str = Field(
-        ...,
-        min_length = 1,
-        max_length = 50,
-        )
-    age: int = Field(
-        ...,
-        gt = 0,
-        le = 115
-        )
-
-    hair_color: Optional[HairColor] = Field(default = None) #obligo a hair_color a ser heredado de la clase HairColor para tener los colores de validaciones
-    is_married: Optional[bool] = Field(default = None)
+class Person(PersonBase):
+    password: str = Field(..., min_length = 8)
+class PersonOut(PersonBase):
+    pass
 
 @app.get("/")
 def home():
