@@ -118,7 +118,8 @@ def create_person(
     path = "/person/detail",
     status_code=status.HTTP_200_OK,
     tags =["Person"],
-    summary ="Query person's name and age"
+    summary ="Query person's name and age",
+    deprecated = True
     )
 def show_person(
     #default is none for query parameters min lenght 1 max lenght 50
