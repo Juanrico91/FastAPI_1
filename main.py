@@ -74,6 +74,8 @@ class Person(PersonBase):
 class PersonOut(PersonBase):
     pass
 
+# Database
+people = [1, 2, 3, 4, 5]
 class LoginOut(BaseModel):
     username: str = Field(..., max_length = 20, example = "judricomo")
     message: str = Field(default="Login Succesfully!")
@@ -92,11 +94,22 @@ def home():
     path= "/person/new",
     response_model = PersonOut,
     status_code = status.HTTP_201_CREATED,
-    tags =["Person"]
+    tags =["Person"],
+    summary = "Create a new person in the app"
     ) # con response model devuelvo lo que esta en PersonOut
 def create_person(
     person: Person = Body(...)
     ):
+    """
+    Create Person
+    This path operation creates a person in the app and save the information in the database
+
+    Parameters:
+    - Request body parameter:
+        - **person: Person** -> A person model with first name, last name, age, hair color and marital stauts
+
+    Returns a person model with first name, last name, age, hair color and marital status
+    """
     return person
 
 # Validaciones: Query Parameters
@@ -104,7 +117,8 @@ def create_person(
 @app.get(
     path = "/person/detail",
     status_code=status.HTTP_200_OK,
-    tags =["Person"]
+    tags =["Person"],
+    summary ="Query person's name and age"
     )
 def show_person(
     #default is none for query parameters min lenght 1 max lenght 50
@@ -122,12 +136,10 @@ def show_person(
         description="This is the person age. It is required",
         example="30"
         )
-):
+    ):
     return {name: age}
 
 #Validaciones: Path Parameters
-
-people = [1, 2, 3, 4, 5]
 
 @app.get(
     path = "/person/detail/{person_id}",
@@ -142,7 +154,10 @@ def show_person(
             description = "This is the person ID must be greater than 0",
             example = 120
             )
-):
+    ):
+    """
+
+    """
     if person_id not in people:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND,
