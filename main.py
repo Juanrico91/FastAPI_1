@@ -1,4 +1,5 @@
 #Python
+from re import A
 from typing import Optional
 from enum import Enum # Enumeraciones de strings
 
@@ -38,7 +39,6 @@ class Location(BaseModel):
         ) #los examples no funcionan con la clase de config
 
 class Person(BaseModel):
-
     first_name: str = Field( #validar Class parameters
         ...,
         min_length = 1,
@@ -53,11 +53,9 @@ class Person(BaseModel):
         ...,
         gt = 0,
         le = 115
-        )
-
+    )
     hair_color: Optional[HairColor] = Field(default = None) #obligo a hair_color a ser heredado de la clase HairColor para tener los colores de validaciones
     is_married: Optional[bool] = Field(default = None)
-    password: str = Field(..., min_length = 8)
     class Config:
         schema_extra = {
             "example": {
@@ -65,31 +63,9 @@ class Person(BaseModel):
                 "last_name": "Rico",
                 "age": 30,
                 "hair_color": "blonde",
-                "is_married": False,
-                "password" : "1234ag678"
+                "is_married": False
             }
         }
-
-class PersonOut(BaseModel):
-
-    first_name: str = Field( #validar Class parameters
-        ...,
-        min_length = 1,
-        max_length = 50,
-        ) #puedo poner ejemplos dentro del Field pero con la clase de config queda bien
-    last_name: str = Field(
-        ...,
-        min_length = 1,
-        max_length = 50,
-        )
-    age: int = Field(
-        ...,
-        gt = 0,
-        le = 115
-        )
-
-    hair_color: Optional[HairColor] = Field(default = None) #obligo a hair_color a ser heredado de la clase HairColor para tener los colores de validaciones
-    is_married: Optional[bool] = Field(default = None)
 
 @app.get("/")
 def home():
@@ -97,7 +73,7 @@ def home():
 
 # Request and Response Body
 
-@app.post("/person/new", response_model=PersonOut) # con response model devuelvo lo que esta en PersonOut
+@app.post("/person/new")
 def create_person(person: Person = Body(...)):
     return person
 
