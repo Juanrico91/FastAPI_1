@@ -10,9 +10,8 @@ from pydantic import EmailStr
 #FastAPI
 from fastapi import FastAPI
 from fastapi import status
+from fastapi import HTTPException
 from fastapi import Body, Query, Path, Form, Header, Cookie, UploadFile, File
-from starlette.status import HTTP_200_OK
-from starlette.types import Message
 
 app = FastAPI()
 
@@ -93,7 +92,9 @@ def home():
     response_model=PersonOut,
     status_code=status.HTTP_201_CREATED
     ) # con response model devuelvo lo que esta en PersonOut
-def create_person(person: Person = Body(...)):
+def create_person(
+    person: Person = Body(...)
+    ):
     return person
 
 # Validaciones: Query Parameters
@@ -123,6 +124,8 @@ def show_person(
 
 #Validaciones: Path Parameters
 
+people = [1, 2, 3, 4, 5]
+
 @app.get(
     path = "/person/detail/{person_id}",
     status_code =status.HTTP_200_OK
@@ -136,6 +139,11 @@ def show_person(
             example = 120
             )
 ):
+    if person_id not in people:
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND,
+            detail = "This person has not been registered!"
+        ) ## raise is used instead of return when conditions are set
     return {person_id: "It exists!!"}
 
 # Validaciones:Request Body
@@ -167,7 +175,9 @@ def update_person(
     response_model = LoginOut,
     status_code=status.HTTP_200_OK
 )
-def login(username: str = Form(...), password: str = Form(...)):
+def login(
+    username: str = Form(...),
+    password: str = Form(...)):
     return LoginOut(username = username)
 
 # Cookies and headers
